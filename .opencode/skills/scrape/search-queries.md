@@ -4,7 +4,9 @@
 
 ## Installed portal CLIs (primary for `/scrape`)
 
-`/scrape` discovers every portal skill under `.agents/skills/*/SKILL.md` and runs its CLI first. The shipped country-agnostic CLIs are `linkedin-search` and `freehire-search`; any skill you add with `/add-portal` is included the same way. You do **not** need a matching `site:` line below for those CLIs to run.
+`/scrape` discovers every portal skill under `.agents/skills/*/SKILL.md` and runs its CLI first. The installed CLIs are `linkedin-search`, `freehire-search`, `ycombinator-search`, `weworkremotely-search`, `remoteok-search`, `otta-search`, `himalayas-search`, and `indeed-search`; any skill you add with `/add-portal` is included the same way. You do **not** need a matching `site:` line below for those CLIs to run.
+
+`indeed-search` defaults to a 13-country EMENA core and `--all-countries` expands to the full 31-site sweep; prefer `--countries` for routine searches to keep request volume low.
 
 The `site:` query templates in this file are the **websearch fallback** — for portals without a CLI, company career pages, or when a CLI fails.
 
@@ -15,6 +17,12 @@ The `site:` query templates in this file are the **websearch fallback** — for 
 Primary (your market's job boards - scaffold one with `/add-portal`):
 - **[YOUR_JOB_BOARD]** - your market's largest general job board
 - **linkedin.com/jobs** - LinkedIn job listings (filter: [YOUR_COUNTRY] / [YOUR_CITY]); also covered by `linkedin-search` CLI
+- **indeed.com** - Indeed country sites, covered by `indeed-search` CLI (EMENA, remote / visa sponsorship)
+- **workatastartup.com** - YC startup jobs, covered by `ycombinator-search` CLI
+- **weworkremotely.com** - remote jobs, covered by `weworkremotely-search` CLI
+- **remoteok.com** - remote jobs, covered by `remoteok-search` CLI
+- **welcometothejungle.com** - Otta / Welcome to the Jungle, covered by `otta-search` CLI
+- **himalayas.app** - remote jobs, covered by `himalayas-search` CLI
 - **[YOUR_INDUSTRY_JOB_BOARD]** - a niche/industry board for your field (optional)
 - **[YOUR_ADDITIONAL_JOB_BOARD]** - another major board for your market (optional)
 

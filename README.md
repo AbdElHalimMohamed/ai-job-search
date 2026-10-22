@@ -39,7 +39,7 @@ Sixty-nine tailored applications, twenty first interviews, and one signed contra
 
 ## What this is
 
-A structured workflow that turns OpenCode into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The shipped portal skills cover LinkedIn's public job listings and the freehire.me tech aggregator; the pattern is designed to be swapped for your local job boards with `/add-portal`.
+A structured workflow that turns OpenCode into a full-stack job application assistant. The core workflow (self-profiling, fit evaluation, and the drafter-reviewer application pipeline) is **language- and country-agnostic**. The shipped portal skills cover LinkedIn, the freehire.me tech aggregator, the global remote and startup boards (Y Combinator, We Work Remotely, RemoteOK, Otta / Welcome to the Jungle, and Himalayas), and a multi-country Indeed EMENA search; the pattern is designed to be swapped for your local job boards with `/add-portal`.
 
 ```
 /setup          /scrape              /apply <url>
@@ -95,7 +95,7 @@ python3 tools/install_portal_clis.py   # Windows: python tools\install_portal_cl
 
 It runs `bun install` in every portal CLI under `.agents/skills/*/cli/` - discovered, not listed, so a portal you add with `/add-portal` or copy from another fork is included on a fresh clone. A CLI whose `package.json` declares an install-time lifecycle script is skipped and reported rather than run. `--dry-run` shows what it would install.
 
-For `linkedin-search` and `freehire-search` the install is optional: both have zero runtime dependencies and run with plain `bun`; `bun install` only pulls TypeScript dev types.
+Every shipped portal CLI has zero npm runtime dependencies and runs with plain `bun`; `indeed-search` additionally uses the system `curl` binary. The install is therefore optional and only pulls TypeScript dev types.
 
 ### 3. Set up your profile
 
@@ -185,7 +185,13 @@ ai-job-search/
 ├── opencode.json                      # Runtime config, permissions, default agent
 ├── .agents/skills/                    # Job portal CLI tools
 │   ├── linkedin-search/               # LinkedIn public job listings (country-agnostic)
-│   └── freehire-search/               # freehire.me tech job aggregator (multi-market, REST API)
+│   ├── freehire-search/               # freehire.me tech job aggregator (multi-market, REST API)
+│   ├── ycombinator-search/            # Y Combinator "Work at a Startup" (global startups)
+│   ├── weworkremotely-search/         # We Work Remotely RSS (remote-only)
+│   ├── remoteok-search/               # RemoteOK API (remote-only)
+│   ├── otta-search/                   # Otta / Welcome to the Jungle (global, Europe-heavy)
+│   ├── himalayas-search/              # Himalayas API (remote-only)
+│   └── indeed-search/                 # Indeed EMENA (remote / visa sponsorship)
 ├── cv/
 │   └── main_example.tex               # moderncv LaTeX template
 ├── cover_letters/
@@ -293,7 +299,7 @@ If you prefer doing it by hand, the manual route still works: update the guidanc
 
 ### Job search tools
 
-The two country-agnostic CLI tools in `.agents/skills/` (`linkedin-search` and `freehire-search`) demonstrate the pattern for building a job-portal integration. To add a board for your own market, run:
+The installed CLI tools in `.agents/skills/` demonstrate the pattern for building a job-portal integration. To add a board for your own market, run:
 
 ```
 /add-portal
@@ -303,10 +309,16 @@ Give it your local job board's URL. The command investigates the portal (search-
 
 Maintaining a fork adapted to your market or language? Add it to the [Community forks & adaptations](https://github.com/MadsLorentzen/ai-job-search/discussions/78) thread so others can find it.
 
-The repo ships two country-agnostic portal skills:
+The installed portal skills:
 
 - **`linkedin-search`** — built on LinkedIn's public, unauthenticated `jobs-guest` endpoints. Field-agnostic, **zero runtime dependencies** (runs with just `bun`), and takes the search location as an explicit flag, so it works for any market out of the box (`-l "Berlin, Germany"`, `-l "Mumbai, Maharashtra, India"`, `-l "Remote"`, …). Intended for **personal use only** — automated access is against LinkedIn's Terms of Service, so keep volume low. See `.agents/skills/linkedin-search/SKILL.md`.
 - **`freehire-search`** — queries the [freehire.me](https://freehire.me) aggregator's public REST API (JSON, no API key). Tech-focused (software, data, engineering, DevOps, remote), multi-market via facet flags (`--region`, `--country`, `--remote`), and **zero runtime dependencies**. Unlike HTML-scraping portal skills, results come back structured (skills, seniority, category). The backend is MIT-licensed and [self-hostable](https://github.com/strelov1/freehire) — point `FREEHIRE_API_URL` at your own instance if you prefer. See `.agents/skills/freehire-search/SKILL.md`.
+- **`ycombinator-search`** — Y Combinator's "Work at a Startup" board. Public, unauthenticated, startup-focused; client-side keyword/location filtering. Personal use only. See `.agents/skills/ycombinator-search/SKILL.md`.
+- **`weworkremotely-search`** — We Work Remotely's public RSS feeds. Remote-only, with category filters. See `.agents/skills/weworkremotely-search/SKILL.md`.
+- **`remoteok-search`** — RemoteOK's public JSON API. Remote-only, with tag/location/query filtering. See `.agents/skills/remoteok-search/SKILL.md`.
+- **`otta-search`** — Otta / Welcome to the Jungle's public Algolia index and REST API. Global, Europe-heavy, remote-friendly. Personal use only. See `.agents/skills/otta-search/SKILL.md`.
+- **`himalayas-search`** — Himalayas' public JSON API. Remote-only, paged and filtered client-side. See `.agents/skills/himalayas-search/SKILL.md`.
+- **`indeed-search`** — Indeed across EMENA (Europe, Middle East, North Africa). Fans out across country sites with remote and visa-sponsorship modes; defaults to a 13-country core and offers `--all-countries` for the full 31-site sweep. Personal use only — Indeed's robots.txt disallows the detail path. See `.agents/skills/indeed-search/SKILL.md`.
 
 ### Extending the framework: portals, templates, criteria - and borrowing from other forks
 

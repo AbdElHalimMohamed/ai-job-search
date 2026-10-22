@@ -14,6 +14,12 @@ permission:
     "*": deny
     "bun run .agents/skills/linkedin-search/cli/src/cli.ts detail *": allow
     "bun run .agents/skills/freehire-search/cli/src/cli.ts detail *": allow
+    "bun run .agents/skills/ycombinator-search/cli/src/cli.ts detail *": allow
+    "bun run .agents/skills/weworkremotely-search/cli/src/cli.ts detail *": allow
+    "bun run .agents/skills/remoteok-search/cli/src/cli.ts detail *": allow
+    "bun run .agents/skills/otta-search/cli/src/cli.ts detail *": allow
+    "bun run .agents/skills/himalayas-search/cli/src/cli.ts detail *": allow
+    "bun run .agents/skills/indeed-search/cli/src/cli.ts detail *": allow
     "python3 tools/fetch_page.py *": allow
     "python3 tools/robots_check.py *": allow
     "python3 tools/posting_guard.py *": allow

@@ -15,6 +15,10 @@ per-file diff commands.
 
 ### Added
 
+- **Five global remote/startup portal skills** (`.agents/skills/ycombinator-search`, `weworkremotely-search`, `remoteok-search`, `otta-search`, `himalayas-search`) - converted from the Claude-format drafts in `new-skills/` to OpenCode skills: Claude-only frontmatter removed, CLI paths rewritten to `.agents/skills/...`, live tests gated behind `RUN_LIVE_PORTAL_TESTS=1` with offline fixtures added, and the We Work Remotely search output fixed to emit the `/scrape` contract's `location` field and ISO dates. Each portal now has its exact shell grant and skill allow entry in `opencode.json` and `tools/security_guards.py`, and the read-only fetch agents can run its `detail` command.
+
+- **`indeed-search` generalized from India to EMENA** (`.agents/skills/indeed-search`) - the old `indeed-india-search` hardcoded `in.indeed.com`; the skill now fans out to Indeed country sites across Europe, the Middle East, and North Africa. It defaults to a 13-country core (`GB, DE, IE, NL, FR, ES, SE, IT, AE, SA, TR, QA, EG`), supports `--all-countries` for the full 31-site sweep (Israel excluded), and offers `--eligibility remote|visa|either` (default `either`). Indeed has no native visa-sponsorship filter, so visa mode appends a query phrase, classifies results as positive/negative/unknown, and reports the evidence excerpt; remote mode uses Indeed's structured `sc=0kf:attr(DSQF7);` filter. Detail accepts a country URL or a bare job key plus `--country`. Tests are offline and live tests are opt-in.
+
 - **CI runs the Python suite on Windows** (`.github/workflows/ci.yml` `python-tests-windows`) - every
   job ran on Ubuntu, so a Windows-only failure reached master with all checks green: #480's test
   (an atomic rename that Windows file locking refuses) and #486's (a tool printing non-ASCII JSON

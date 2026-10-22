@@ -27,6 +27,12 @@
       "bun --version": "allow",
       "bun run .agents/skills/linkedin-search/cli/src/cli.ts *": "allow",
       "bun run .agents/skills/freehire-search/cli/src/cli.ts *": "allow",
+      "bun run .agents/skills/ycombinator-search/cli/src/cli.ts *": "allow",
+      "bun run .agents/skills/weworkremotely-search/cli/src/cli.ts *": "allow",
+      "bun run .agents/skills/remoteok-search/cli/src/cli.ts *": "allow",
+      "bun run .agents/skills/otta-search/cli/src/cli.ts *": "allow",
+      "bun run .agents/skills/himalayas-search/cli/src/cli.ts *": "allow",
+      "bun run .agents/skills/indeed-search/cli/src/cli.ts *": "allow",
       "python3 tools/rank_state.py *": "allow",
       "python3 tools/job_key.py *": "allow",
       "python3 tools/scrape_state.py *": "allow",
@@ -54,7 +60,13 @@
       "scrape": "allow",
       "upskill": "allow",
       "linkedin-search": "allow",
-      "freehire-search": "allow"
+      "freehire-search": "allow",
+      "ycombinator-search": "allow",
+      "weworkremotely-search": "allow",
+      "remoteok-search": "allow",
+      "otta-search": "allow",
+      "himalayas-search": "allow",
+      "indeed-search": "allow"
     },
     "task": {
       "*": "deny",

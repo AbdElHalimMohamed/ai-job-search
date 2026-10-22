@@ -20,7 +20,7 @@ On Windows, `py --version` is often the most reliable check. If your system expo
 
 ### Bun (for job search tools)
 
-The job portal CLIs (`linkedin-search` and `freehire-search`) are written in TypeScript and run with Bun.
+The job portal CLIs (`linkedin-search`, `freehire-search`, `ycombinator-search`, `weworkremotely-search`, `remoteok-search`, `otta-search`, `himalayas-search`, and `indeed-search`) are written in TypeScript and run with Bun.
 
 - macOS/Linux:
 
@@ -192,7 +192,7 @@ python3 tools/install_portal_clis.py   # Windows: python tools\install_portal_cl
 
 It runs `bun install` in every portal CLI under `.agents/skills/*/cli/` - discovered, not listed, so a portal you add with `/add-portal` or copy from another fork is included on a fresh clone. A CLI whose `package.json` declares an install-time lifecycle script is skipped and reported rather than run. `--dry-run` shows what it would install.
 
-For `linkedin-search` and `freehire-search` the install is optional: both have zero runtime dependencies and run with plain `bun`; `bun install` only pulls TypeScript dev types.
+Every shipped portal CLI has zero npm runtime dependencies and runs with plain `bun`; `indeed-search` additionally uses the system `curl` binary. The install is optional and only pulls TypeScript dev types.
 
 You can generate an equivalent search skill for your local job board with `/add-portal` — it scaffolds the same CLI structure for any public portal and test-runs a live query before registering. See the "Job search tools" section in the README.
 

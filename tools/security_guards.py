@@ -36,6 +36,12 @@ ALLOWED_SHELL = {
     "bun --version",
     "bun run .agents/skills/linkedin-search/cli/src/cli.ts *",
     "bun run .agents/skills/freehire-search/cli/src/cli.ts *",
+    "bun run .agents/skills/ycombinator-search/cli/src/cli.ts *",
+    "bun run .agents/skills/weworkremotely-search/cli/src/cli.ts *",
+    "bun run .agents/skills/remoteok-search/cli/src/cli.ts *",
+    "bun run .agents/skills/otta-search/cli/src/cli.ts *",
+    "bun run .agents/skills/himalayas-search/cli/src/cli.ts *",
+    "bun run .agents/skills/indeed-search/cli/src/cli.ts *",
     "python3 tools/rank_state.py *",
     "python3 tools/job_key.py *",
     "python3 tools/scrape_state.py *",
@@ -82,6 +88,12 @@ REQUIRED_SKILL_ALLOW = {
     "upskill",
     "linkedin-search",
     "freehire-search",
+    "ycombinator-search",
+    "weworkremotely-search",
+    "remoteok-search",
+    "otta-search",
+    "himalayas-search",
+    "indeed-search",
 }
 
 REQUIRED_TASK_ALLOW = {
@@ -93,6 +105,12 @@ REQUIRED_TASK_ALLOW = {
 ALLOWED_AGENT_SHELL = {
     "bun run .agents/skills/linkedin-search/cli/src/cli.ts detail *",
     "bun run .agents/skills/freehire-search/cli/src/cli.ts detail *",
+    "bun run .agents/skills/ycombinator-search/cli/src/cli.ts detail *",
+    "bun run .agents/skills/weworkremotely-search/cli/src/cli.ts detail *",
+    "bun run .agents/skills/remoteok-search/cli/src/cli.ts detail *",
+    "bun run .agents/skills/otta-search/cli/src/cli.ts detail *",
+    "bun run .agents/skills/himalayas-search/cli/src/cli.ts detail *",
+    "bun run .agents/skills/indeed-search/cli/src/cli.ts detail *",
     "python3 tools/fetch_page.py *",
     "python3 tools/robots_check.py *",
     "python3 tools/posting_guard.py *",

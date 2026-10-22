@@ -15,7 +15,7 @@ Thanks for considering a contribution! This repo has a deliberate, narrow philos
 
 ## What gets declined
 
-- **Market- or country-specific skills and content.** One country's portal opens the door to every country's portal; there is no principled stopping point. Precedent: [#31] (India), [#39] (France, despite an honest and excellent PR), [#67] (China). The in-tree portal skills in this fork are country-agnostic (`linkedin-search` and `freehire-search`); market-specific portals live in forks.
+- **Market- or country-specific skills and content in upstream.** One country's portal opens the door to every country's portal; there is no principled stopping point. Precedent: [#31] (India), [#39] (France, despite an honest and excellent PR), [#67] (China). This personal fork also carries the global remote boards (`ycombinator-search`, `weworkremotely-search`, `remoteok-search`, `otta-search`, `himalayas-search`) and the fork-local `indeed-search` EMENA skill; upstream's in-tree examples remain the country-agnostic `linkedin-search` and `freehire-search`.
 - **Personal profile data.** The template ships placeholders; your populated profile lives in your fork. CI enforces this (`placeholder-integrity`). Precedent: [#17], [#72].
 - **Alternative-harness ports and duplicate workflow sources.** The markdown specs ARE the implementation; a second copy (another agent CLI, an orchestration layer, a wrapper command) drifts from the first the moment either changes. Precedent: [#44], [#49], [#66].
 - **Speculative infrastructure.** Complexity must be argued from a problem that exists, not one that might. Precedent: [#63].
