@@ -222,7 +222,7 @@ class SubjectCollisionTests(TriageRepoFixture):
         self.assertNotIn("already applied (cherry-picked)", result.stdout)
 
     def test_conflict_resolved_personalized_port_has_distinct_verify_reason(self):
-        profile = ".claude/skills/job-application-assistant/01-candidate-profile.md"
+        profile = ".opencode/skills/job-application-assistant/01-candidate-profile.md"
         self.write(profile, "Name: template\nGuidance: old\n")
         self.commit("Add template profile")
         self.write(profile, "Name: template\nGuidance: improved\n")

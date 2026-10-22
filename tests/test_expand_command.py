@@ -5,17 +5,17 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-EXPAND_COMMAND_FILE = REPO_ROOT / ".claude" / "commands" / "expand.md"
-BEHAVIORAL_PROFILE = REPO_ROOT / ".claude" / "skills" / "job-application-assistant" / "02-behavioral-profile.md"
+EXPAND_COMMAND_FILE = REPO_ROOT / ".opencode" / "commands" / "expand.md"
+BEHAVIORAL_PROFILE = REPO_ROOT / ".opencode" / "skills" / "job-application-assistant" / "02-behavioral-profile.md"
 
 
 class ExpandCommandTests(unittest.TestCase):
     def test_expand_command_file_exists(self):
-        self.assertTrue(EXPAND_COMMAND_FILE.exists(), "expand.md must exist under .claude/commands/")
+        self.assertTrue(EXPAND_COMMAND_FILE.exists(), "expand.md must exist under .opencode/commands/")
 
     def test_expand_command_file_starts_with_correct_header(self):
         text = EXPAND_COMMAND_FILE.read_text(encoding="utf-8")
-        first_line = text.lstrip().splitlines()[0]
+        first_line = next(line for line in text.splitlines() if line.startswith("# /"))
         self.assertTrue(
             first_line.startswith("# /expand"),
             f"Command file must start with '# /expand', got: {first_line!r}",

@@ -4,15 +4,15 @@ Mirrors the pattern of test_html_report_command.py: derive the contract from
 the spec itself and compare it against the real portal CLIs, so a drift on
 either side fails with a clean diff.
 
-Why this test exists: .claude/skills/job-scraper/SKILL.md Step 2 promises
+Why this test exists: .opencode/skills/scrape/SKILL.md Step 2 promises
 "Search output already includes title, company, location, date, and URL" for
 every portal CLI, and Step 4.75's degraded scan flags "company null or empty
 on every result" as a half-working parser. A CLI that quietly stops emitting
 those fields flags the portal as degraded on every /scrape run while CI stays
 green, breaks the seen_jobs.json dedupe (url_or_company_title_key), and leaves
-/rank without a posting URL. That failure class landed for real: jobnet-search
-emitted only the raw API schema and jobdanmark-search emitted companyName with
-no company/location/date keys until both were normalized.
+/rank without a posting URL. That failure class landed for real in the removed Danish portal CLIs: one
+emitted only the raw API schema and another emitted companyName with no
+company/location/date keys until both were normalized.
 
 {helpers.ts, commands/search.ts} are the two files where every registered
 CLI's search output currently lives (HTML-parsing portals normalize in
@@ -25,7 +25,7 @@ import unittest
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-SCRAPER_SKILL = REPO_ROOT / ".claude" / "skills" / "job-scraper" / "SKILL.md"
+SCRAPER_SKILL = REPO_ROOT / ".opencode" / "skills" / "scrape" / "SKILL.md"
 PORTAL_CLIS = sorted((REPO_ROOT / ".agents" / "skills").glob("*-search"))
 
 # Derived, never copied: a hardcoded field list drifts in lockstep with
@@ -38,7 +38,7 @@ def derive_contract_fields() -> frozenset[str]:
     text = SCRAPER_SKILL.read_text(encoding="utf-8")
     match = _CONTRACT_SENTENCE.search(text)
     if match is None:
-        raise AssertionError("Step 2 contract sentence not found in job-scraper/SKILL.md")
+        raise AssertionError("Step 2 contract sentence not found in scrape/SKILL.md")
     fields_text = re.sub(r"\s+and\s+", ",", match.group(1))
     fields = {f.strip().lower() for f in fields_text.split(",") if f.strip()}
     return frozenset(fields)
@@ -85,7 +85,7 @@ def derive_stored_fields() -> frozenset[str]:
     text = SCRAPER_SKILL.read_text(encoding="utf-8")
     match = _STEP4_SCHEMA_BLOCK.search(text)
     if match is None:
-        raise AssertionError("Step 4 seen_jobs.json schema block not found in job-scraper/SKILL.md")
+        raise AssertionError("Step 4 seen_jobs.json schema block not found in scrape/SKILL.md")
     return frozenset(re.findall(r'"([a-z_]+)":', match.group(1)))
 
 

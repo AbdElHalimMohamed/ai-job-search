@@ -7,7 +7,7 @@ now all use `python3`, and every spec that runs a tool carries a single
 Windows note at its first use: a python.org install on Windows ships no
 `python3`, so that name reaches the Microsoft Store alias, which either exits
 49 with no output or starts a separate Store Python without the packages
-`pip` installed. The note points at `python`, and `.claude/settings.json`
+`pip` installed. The note points at `python`, and `opencode.json`
 keeps granting both spellings, so no settings or guard change is needed.
 
 Nothing enforced either half. A later edit could reintroduce a bare `python
@@ -30,9 +30,9 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parent.parent
 
 SPEC_GLOBS = (
-    ".claude/commands/*.md",
-    ".claude/skills/**/*.md",
-    ".claude/agents/*.md",
+    ".opencode/commands/*.md",
+    ".opencode/skills/**/*.md",
+    ".opencode/agents/*.md",
 )
 
 SPECS = sorted(
@@ -41,12 +41,12 @@ SPECS = sorted(
 
 # Specs known to run a tool today; the glob must keep finding them.
 KNOWN_TOOL_SPECS = {
-    ".claude/commands/rank.md",
-    ".claude/commands/apply.md",
-    ".claude/skills/job-scraper/SKILL.md",
-    ".claude/skills/job-application-assistant/04-job-evaluation.md",
-    ".claude/skills/job-application-assistant/05-cv-templates.md",
-    ".claude/skills/job-application-assistant/09-web-research.md",
+    ".opencode/commands/rank.md",
+    ".opencode/commands/apply.md",
+    ".opencode/skills/scrape/SKILL.md",
+    ".opencode/skills/job-application-assistant/04-job-evaluation.md",
+    ".opencode/skills/job-application-assistant/05-cv-templates.md",
+    ".opencode/skills/job-application-assistant/09-web-research.md",
 }
 
 WINDOWS_NOTE = "> **Windows:** run these tools as `python`, not `python3`."
@@ -82,7 +82,7 @@ class SpecPythonSpellingTest(unittest.TestCase):
             "workflow specs must invoke Python as `python3 ...` on every line - "
             "the settled spelling (#669); a bare `python` breaks where distros "
             "ship no python alias, and a `\"$PY\"` probe cannot work across "
-            "Claude Code's per-call shells:\n" + "\n".join(problems),
+            "OpenCode's per-call shells:\n" + "\n".join(problems),
         )
 
     def test_each_tool_spec_carries_exactly_one_windows_note_before_first_use(self):

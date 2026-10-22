@@ -13,10 +13,10 @@ try:
 except ImportError:  # unittest discover -s tests imports modules top-level
     from _bash import find_bash
 
-COMMAND = Path(__file__).resolve().parent.parent / ".claude/commands/reset.md"
+COMMAND = Path(__file__).resolve().parent.parent / ".opencode/commands/reset.md"
 FOLDERS = ("cv", "linkedin", "diplomas", "references", "projects", "postings", "applications")
 BASH = find_bash()
-# The block is POSIX shell by design: Claude Code's Bash tool runs the user's
+# The block is POSIX shell by design: OpenCode's Bash tool runs the user's
 # shell, which is zsh on macOS, and the bash-only `shopt` it used to carry
 # exited 127 there before deleting anything. Replay it under every shell on
 # this machine, not only bash.

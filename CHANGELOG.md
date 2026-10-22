@@ -25,6 +25,8 @@ per-file diff commands.
 
 ### Changed
 
+- **Runtime migrated from Claude Code to OpenCode** - commands, skills, subagents, and permissions now live under `.opencode/` with `opencode.json` as the single runtime config. `CLAUDE.md` became `CANDIDATE_PROFILE.md` and is loaded through `config.instructions`; the three read-only subagents use OpenCode `permission` blocks. The Claude-only `allowed-tools` skill grants and `tools:` agent lists were removed. The four Danish demo portal skills (`jobbank`, `jobdanmark`, `jobindex`, `jobnet`) were deleted; only the country-agnostic `linkedin-search` and `freehire-search` portals remain. Upstream sync tools map the upstream `.claude/...` paths to this fork's `.opencode/...` paths.
+
 - **`freehire-search` documents the `OR` and `title:` query operators** (#674,
   `.agents/skills/freehire-search/SKILL.md`, `url-reference.md`, `cli/README.md`, `--help`) -
   freehire's search parses an uppercase `OR` between up to five alternatives and a leading `title:`

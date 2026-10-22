@@ -16,7 +16,7 @@ Profile scope: the same class of gap, one scope over. /setup Step 3
 populates six skill files, and /reset profile cleared four of them -
 `04-job-evaluation.md` (the user's match areas, career goals, financial
 situation and schedule constraints) was listed by name as containing
-"framework rules, not candidate data", and `job-scraper/search-queries.md`
+"framework rules, not candidate data", and `scrape/search-queries.md`
 (their role titles, city and commute tiers) appeared nowhere in reset.md.
 Both are tracked and unignored, and CI's placeholder-integrity job guards
 04-job-evaluation.md under "personal data may have been committed", so a
@@ -41,8 +41,8 @@ except ImportError:  # `python -m unittest discover -s tests` imports test modul
     from _upstream import is_upstream_checkout
 
 REPO = Path(__file__).resolve().parent.parent
-RESET = REPO / ".claude" / "commands" / "reset.md"
-SETUP = REPO / ".claude" / "commands" / "setup.md"
+RESET = REPO / ".opencode" / "commands" / "reset.md"
+SETUP = REPO / ".opencode" / "commands" / "setup.md"
 BASH = find_bash()
 
 
@@ -114,18 +114,18 @@ def setup_step3_skill_files():
     """Skill files /setup Step 3 populates, derived from its own headings.
 
     Step 3's targets are written as '### <n>. <verb> `<target>`', where the
-    target is either a bare filename resolved against .claude/skills/ or a
-    repo-relative path. Non-skill targets (CLAUDE.md, cv/main_example.tex)
+    target is either a bare filename resolved against .opencode/skills/ or a
+    repo-relative path. Non-skill targets (CANDIDATE_PROFILE.md, cv/main_example.tex)
     are dropped: /reset profile's scope is skill files only.
     """
     step3 = section(SETUP.read_text(encoding="utf-8"), "## Step 3:", "## Step 4:")
     files = set()
     for target in re.findall(r"^###\s+\d+\.\s+\w+\s+`([^`]+)`", step3, re.MULTILINE):
         if (REPO / target).exists():
-            if target.startswith(".claude/skills/"):
+            if target.startswith(".opencode/skills/"):
                 files.add(Path(target).name)
             continue
-        matches = list((REPO / ".claude" / "skills").glob(f"*/{target}"))
+        matches = list((REPO / ".opencode" / "skills").glob(f"*/{target}"))
         if matches:
             files.add(Path(target).name)
     return files
@@ -182,7 +182,7 @@ class TestResetCoversEveryPersonalizedSkillFile(unittest.TestCase):
             f"{mislabeled}",
         )
 
-SKILL_DIR = REPO / ".claude" / "skills" / "job-application-assistant"
+SKILL_DIR = REPO / ".opencode" / "skills" / "job-application-assistant"
 
 
 def skeleton_step(reset_text, filename):
@@ -296,7 +296,7 @@ class TestResetTargetsTheHeadingsTheShippedFilesHave(unittest.TestCase):
                 )
 
     def test_candidate_skeleton_keeps_the_languages_table_under_identity(self):
-        # 04-job-evaluation.md's Language Gate and job-scraper/search-queries.md
+        # 04-job-evaluation.md's Language Gate and scrape/search-queries.md
         # both read "your Languages table" from 01-candidate-profile.md. The
         # skeleton had `## Identity` with nothing under it, so after a reset the
         # gate and the scraper looked for a table the file no longer had. Both

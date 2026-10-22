@@ -21,10 +21,10 @@ except ImportError:
     _HAVE_YAML = False
 
 REPO = Path(__file__).resolve().parent.parent
-COMMAND = REPO / ".claude" / "commands" / "rank.md"
-SCRAPER_SKILL = REPO / ".claude" / "skills" / "job-scraper" / "SKILL.md"
+COMMAND = REPO / ".opencode" / "commands" / "rank.md"
+SCRAPER_SKILL = REPO / ".opencode" / "skills" / "scrape" / "SKILL.md"
 EVALUATION = (
-    REPO / ".claude" / "skills" / "job-application-assistant" / "04-job-evaluation.md"
+    REPO / ".opencode" / "skills" / "job-application-assistant" / "04-job-evaluation.md"
 )
 
 
@@ -96,7 +96,7 @@ class RankCommandSpec(unittest.TestCase):
 
     def test_command_file_exists_with_lint_compliant_header(self):
         self.assertTrue(COMMAND.is_file(), "command spec missing")
-        first_line = COMMAND.read_text(encoding="utf-8").splitlines()[0]
+        first_line = next(line for line in COMMAND.read_text(encoding="utf-8").splitlines() if line.startswith("# /"))
         self.assertTrue(
             first_line.startswith("# /rank"),
             f"header must start with '# /rank' (lint_skills.py enforces it), got: {first_line!r}",
@@ -228,8 +228,8 @@ class RankCommandSpec(unittest.TestCase):
     def test_sweep_parses_stored_deadlines_defensively(self):
         """Rule 6's expiry sweep mutates status automatically from stored
         deadline values, and portals have shipped non-ISO shapes into
-        seen_jobs.json ("ASAP" from jobindex, DD.MM.YYYY from jobbank,
-        free text from jobdanmark's detail fallback). /outcome carries a
+        seen_jobs.json ("ASAP" from one portal, DD.MM.YYYY from another,
+        free text from a detail fallback). /outcome carries a
         defensive date-parse rule for mere display; the command that
         silently changes state needs one at least as much."""
         text = COMMAND.read_text(encoding="utf-8")
@@ -682,12 +682,12 @@ class RankStateToolSpec(unittest.TestCase):
         )
 
     def test_settings_and_guards_allow_the_new_tool(self):
-        settings = json.loads((REPO / ".claude" / "settings.json").read_text(encoding="utf-8"))
-        allow = settings["permissions"]["allow"]
+        settings = json.loads((REPO / "opencode.json").read_text(encoding="utf-8"))
+        shell = settings["permission"]["shell"]
         guards = (REPO / "tools" / "security_guards.py").read_text(encoding="utf-8")
-        for entry in ("Bash(python tools/rank_state.py:*)", "Bash(python3 tools/rank_state.py:*)"):
-            self.assertIn(entry, allow, f"{entry} missing from .claude/settings.json")
-            self.assertIn(entry, guards, f"{entry} missing from security_guards.py's reviewed allowlist")
+        for entry in ("python3 tools/rank_state.py *",):
+            self.assertEqual(shell.get(entry), "allow", f"{entry} missing from opencode.json")
+            self.assertIn(f'"{entry}"', guards, f"{entry} missing from security_guards.py's reviewed allowlist")
 
 
 if __name__ == "__main__":

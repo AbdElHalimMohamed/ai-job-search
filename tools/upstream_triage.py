@@ -82,6 +82,24 @@ def subject(sha: str) -> str:
     return git("show", "-s", "--format=%s", sha).strip()
 
 
+PATH_MAP = {
+    ".claude/skills/job-application-assistant/": ".opencode/skills/job-application-assistant/",
+    ".claude/skills/job-scraper/": ".opencode/skills/scrape/",
+    ".claude/skills/upskill/": ".opencode/skills/upskill/",
+    ".claude/commands/": ".opencode/commands/",
+    ".claude/agents/": ".opencode/agents/",
+    ".claude/settings.json": "opencode.json",
+    "CLAUDE.md": "CANDIDATE_PROFILE.md",
+}
+
+
+def localize(path: str) -> str:
+    """Map an upstream Claude-native path to this fork's OpenCode path."""
+    for old, new in PATH_MAP.items():
+        if path == old or path.startswith(old):
+            return new + path[len(old):] if path.startswith(old) else new
+    return path
+
 def files_touched(sha: str) -> list[str]:
     out = git("show", "--name-only", "--format=", sha).strip()
     return [f for f in out.splitlines() if f]
@@ -204,8 +222,9 @@ def main() -> int:
             skip.append((short, sha, subj, "on the fork's won't-port list"))
             continue
         touched = files_touched(sha)
+        touched_local = [localize(f) for f in touched]
         relevant = [
-            f for f in touched
+            f for f in touched_local
             if path_exists(f)
             or common_base is None
             or not (path_exists(f, common_base) or in_removed_dir(f, common_base))

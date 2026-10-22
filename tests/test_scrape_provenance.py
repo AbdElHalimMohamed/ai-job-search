@@ -2,7 +2,7 @@
 
 The scraper is a markdown spec (the spec IS the implementation), so these
 tests pin the invariants that would break silently: seen_jobs.json entries
-record whether they came from a portal CLI or the WebSearch fallback
+record whether they came from a portal CLI or the websearch fallback
 (`source`), and the Step 5 summary names the portals that ran on the
 fallback. Together these keep a ghost-job report diagnosable days after
 the run's scrollback is gone (#331): a stale-index entry, a live-CLI
@@ -12,7 +12,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-SKILL = REPO / ".claude" / "skills" / "job-scraper" / "SKILL.md"
+SKILL = REPO / ".opencode" / "skills" / "scrape" / "SKILL.md"
 
 
 def _steps(text: str) -> dict[str, str]:
@@ -57,7 +57,7 @@ class ScrapeProvenanceSpec(unittest.TestCase):
 
     def test_fallback_results_are_tagged_at_the_source(self):
         step1 = self.steps.get("Step 1: Search", "")
-        fallback = step1.partition("#### 1c. WebSearch fallback")[2]
+        fallback = step1.partition("#### 1c. websearch fallback")[2]
         self.assertIn(
             "Step 4 persists this as the entry's `source`",
             fallback,
@@ -69,7 +69,7 @@ class ScrapeProvenanceSpec(unittest.TestCase):
         self.assertIn(
             "fallback (websearch):",
             step5,
-            "Step 5 must surface which portals ran on the WebSearch fallback this run",
+            "Step 5 must surface which portals ran on the websearch fallback this run",
         )
         self.assertIn(
             "omit the line when every portal ran its CLI",
@@ -80,7 +80,7 @@ class ScrapeProvenanceSpec(unittest.TestCase):
 
 class TestRecencyFallback(unittest.TestCase):
     """Step 1b.3 says to scope to the last 14 days via the portal's recency
-    flag - but not every portal has one (jobdanmark offers no date filter or
+    flag - but not every portal has one (a portal may offer no date filter or
     sort at all), which left the instruction unsatisfiable there: the agent
     either silently skipped the scoping or invented a flag, and inventing a
     flag is exactly what the UNKNOWN_FLAG rejection now errors on (review

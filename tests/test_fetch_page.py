@@ -276,6 +276,31 @@ class Fetching(FetchPageFixture):
         self.assertIn("HTTP 403", out)
         self.assertIn("denied", self.out.read_text(encoding="utf-8"))
 
+    def test_stdout_prints_raw_body_without_saving(self):
+        code, out, err = self.run_main(f"{self.base}/ok.html", "--stdout")
+        self.assertEqual(code, 0, err)
+        self.assertIn("<h1>Visible", out)
+        self.assertNotIn("saved=", out)
+        self.assertIn("stdout", err)
+
+    def test_guard_runs_posting_guard_on_the_fetched_body(self):
+        code, out, err = self.run_main(f"{self.base}/ok.html", "--guard")
+        self.assertEqual(code, 0, err)
+        self.assertTrue(out.startswith("posting_guard:"), out[:80])
+        self.assertIn("--- findings ---", out)
+        self.assertIn("HTTP 200", err)
+
+    def test_guard_does_not_combine_with_output_flags(self):
+        code, out, err = self.run_main(f"{self.base}/ok.html", "--guard", "--stdout")
+        self.assertEqual(code, 2)
+        self.assertIn("do not combine", err)
+
+    def test_stdout_and_out_are_mutually_exclusive(self):
+        code, out, err = self.run_main(f"{self.base}/ok.html", "--stdout", "--out", str(self.out))
+        self.assertEqual(code, 2)
+        self.assertIn("mutually exclusive", err)
+        self.assertFalse(self.out.exists())
+
     def test_text_strips_script_style_comments_and_unescapes(self):
         code, out, err = self.run_main(f"{self.base}/ok.html", "--out", str(self.out), "--text")
         self.assertEqual(code, 0, err)

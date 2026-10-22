@@ -103,6 +103,11 @@ class TestAgentSelection(unittest.TestCase):
         self.assertFalse(allowed(body, "Claude-User", "/a"))
         self.assertTrue(allowed(body, "*", "/a"))
 
+    def test_named_opencode_opt_out_is_honored(self):
+        body = "User-agent: OpenCode\nDisallow: /\n\nUser-agent: *\nAllow: /\n"
+        self.assertFalse(allowed(body, "OpenCode", "/a"))
+        self.assertTrue(allowed(body, "*", "/a"))
+
     def test_agent_match_is_case_insensitive(self):
         body = "User-agent: CLAUDE-USER\nDisallow: /x\n"
         self.assertFalse(allowed(body, "claude-user", "/x"))

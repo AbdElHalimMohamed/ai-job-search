@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """GET a page with browser headers: the 403 retry from 09-web-research.md.
 
-WebFetch sends a bot-identifying user agent and many corporate, bank and
+webfetch sends a bot-identifying user agent and many corporate, bank and
 recruiter sites answer it with 403 while serving the same page to a browser.
 This script is the retry. It exists as a script, rather than as a documented
 curl command, so that the workflow's pre-approved grant can name
@@ -25,7 +25,7 @@ Properties, each pinned by tests/test_fetch_page.py:
     and the size cap is applied after Content-Encoding is undone.
 
 Usage:
-  python3 tools/fetch_page.py <url> [--out PATH] [--text] [--max-chars N]
+  python3 tools/fetch_page.py <url> [--out PATH | --stdout | --guard] [--text] [--max-chars N]
 
 Prints `HTTP <code> size=<bytes> saved=<path>` and exits 0 whatever the HTTP
 status - the status is information for the escalation order, not a failure.
@@ -204,9 +204,24 @@ def main(argv=None) -> int:
     parser.add_argument("url")
     parser.add_argument("--out", type=Path, default=None,
                         help="where to save the body (default: system temp dir; never inside the repo)")
+    parser.add_argument("--stdout", action="store_true",
+                        help="print the decoded body to stdout instead of saving a file")
+    parser.add_argument("--guard", action="store_true",
+                        help="run posting_guard.py on the fetched body and print its verdict/findings/cleaned text")
     parser.add_argument("--text", action="store_true", help="also print the tag-stripped text")
     parser.add_argument("--max-chars", type=int, default=6000, help="cap for --text (default 6000)")
     args = parser.parse_args(argv)
+    diagnostic = sys.stderr if (args.guard or args.stdout) else sys.stdout
+
+    if args.stdout and args.out is not None:
+        print("fetch_page: --stdout and --out are mutually exclusive", file=sys.stderr)
+        return 2
+    if args.stdout and args.text:
+        print("fetch_page: --stdout prints the raw body; it cannot be combined with --text", file=sys.stderr)
+        return 2
+    if args.guard and (args.stdout or args.out is not None or args.text):
+        print("fetch_page: --guard manages its own temp file and output; do not combine it with --stdout, --out, or --text", file=sys.stderr)
+        return 2
 
     scheme = urlsplit(args.url).scheme.lower()
     if scheme not in ("http", "https"):
@@ -230,12 +245,13 @@ def main(argv=None) -> int:
             if scheme not in ("http", "https"):
                 raise ValueError(f"redirect target must be http(s), got scheme {scheme!r}")
             rc, message = gate(current)
-            print(message)
+            print(message, file=diagnostic)
             if rc != 0:
                 print(
                     "fetch_page: refused - robots.txt does not permit this path, so the "
                     "browser-header retry does not run. Go to escalation step 4: search for "
-                    "the employer's own posting."
+                    "the employer's own posting.",
+                    file=diagnostic,
                 )
                 return 1
             if deadline is None:
@@ -266,6 +282,20 @@ def main(argv=None) -> int:
     except Exception as exc:  # transport failures of any shape: report, exit 2
         print(f"fetch_page: {type(exc).__name__}: {exc}", file=sys.stderr)
         return 2
+
+    if args.stdout:
+        print(f"{status} stdout", file=sys.stderr)
+        sys.stdout.write(decode_page(out.read_bytes()))
+        out.unlink(missing_ok=True)
+        return 0
+
+    if args.guard:
+        print(status, file=sys.stderr)
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        import posting_guard
+        rc = posting_guard.main(["--in", str(out), "--html", "--json"])
+        out.unlink(missing_ok=True)
+        return rc
 
     print(f"{status} saved={out}")
     if args.text:

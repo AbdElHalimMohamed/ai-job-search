@@ -14,18 +14,24 @@ TEMPLATE_URL = "https://github.com/MadsLorentzen/ai-job-search.git"
 FORK_URL = "https://github.com/octocat/ai-job-search.git"
 
 FRAMEWORK_FILES = [
-    ".claude/skills/job-application-assistant/01-candidate-profile.md",
-    ".claude/skills/job-application-assistant/02-behavioral-profile.md",
-    ".claude/skills/job-application-assistant/03-writing-style.md",
-    ".claude/skills/job-application-assistant/04-job-evaluation.md",
-    ".claude/skills/job-application-assistant/05-cv-templates.md",
-    ".claude/skills/job-application-assistant/06-cover-letter-templates.md",
-    ".claude/skills/job-application-assistant/07-interview-prep.md",
-    ".claude/skills/job-application-assistant/08-application-forms.md",
-    ".claude/skills/job-application-assistant/09-web-research.md",
-    ".claude/skills/job-application-assistant/SKILL.md",
+    ".opencode/skills/job-application-assistant/01-candidate-profile.md",
+    ".opencode/skills/job-application-assistant/02-behavioral-profile.md",
+    ".opencode/skills/job-application-assistant/03-writing-style.md",
+    ".opencode/skills/job-application-assistant/04-job-evaluation.md",
+    ".opencode/skills/job-application-assistant/05-cv-templates.md",
+    ".opencode/skills/job-application-assistant/06-cover-letter-templates.md",
+    ".opencode/skills/job-application-assistant/07-interview-prep.md",
+    ".opencode/skills/job-application-assistant/08-application-forms.md",
+    ".opencode/skills/job-application-assistant/09-web-research.md",
+    ".opencode/skills/job-application-assistant/SKILL.md",
     "AGENTS.md",
 ]
+
+UPSTREAM_FILES = {
+    rel: rel.replace(".opencode/skills/job-application-assistant/", ".claude/skills/job-application-assistant/")
+    for rel in FRAMEWORK_FILES
+}
+UPSTREAM_FILES["AGENTS.md"] = "AGENTS.md"
 
 FRONTMATTER = "---\nframework_version: 1.0.0\n---\n"
 
@@ -39,10 +45,11 @@ class UpstreamCheckerRepoFixture(unittest.TestCase):
         tools.mkdir()
         shutil.copy(SCRIPT, tools / "check_upstream_updates.py")
 
-        for rel in FRAMEWORK_FILES:
-            path = self.root / rel
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(FRONTMATTER, encoding="utf-8")
+        for rel, upstream_rel in UPSTREAM_FILES.items():
+            for target in (rel, upstream_rel):
+                path = self.root / target
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(FRONTMATTER, encoding="utf-8")
 
         subprocess.run(["git", "init", "-b", "master"], cwd=self.root, check=True, capture_output=True)
         subprocess.run(["git", "config", "user.name", "Test"], cwd=self.root, check=True, capture_output=True)
@@ -191,8 +198,9 @@ class LegacyEncodingTests(UpstreamCheckerRepoFixture):
         super().setUp()
         # Use the actual shipped framework files, whose UTF-8 prose git show
         # returns, rather than a constructed string passed to run_git().
-        for rel in FRAMEWORK_FILES:
+        for rel, upstream_rel in UPSTREAM_FILES.items():
             shutil.copy(REPO_ROOT / rel, self.root / rel)
+            shutil.copy(REPO_ROOT / rel, self.root / upstream_rel)
         subprocess.run(["git", "add", "-A"], cwd=self.root, check=True, capture_output=True)
         subprocess.run(["git", "commit", "-qm", "copy actual framework files"], cwd=self.root, check=True, capture_output=True)
         self.add_remote("upstream", TEMPLATE_URL)

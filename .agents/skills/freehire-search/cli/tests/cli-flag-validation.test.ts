@@ -201,7 +201,7 @@ describe("freehire CLI flag validation", () => {
 describe("unknown flag rejection", () => {
   // add-portal.md's contract: "a bogus flag or missing required arg exits 1
   // with a JSON error on stderr". A silently discarded flag is worse than an
-  // error: on jobdanmark a wrong flag name returned the entire database
+  // error: on a removed portal a wrong flag name returned the entire database
   // (13,862 results) as if it matched the query (review finding F13,
   // 2026-08-19). Rejection happens before dispatch, so these are network-free.
   test("a bogus --flag exits 1 with a JSON error instead of being silently discarded", async () => {

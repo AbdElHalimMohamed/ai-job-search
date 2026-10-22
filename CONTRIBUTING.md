@@ -4,7 +4,7 @@ Thanks for considering a contribution! This repo has a deliberate, narrow philos
 
 ## The one rule everything follows from
 
-**This repo is a universal template.** People fork it and adapt it to their own market, language, and profile. Upstream stays market-agnostic, person-agnostic, and Claude Code-native. The corollary: a contribution is judged by fit to this rule first, execution quality second. Well-built but off-policy still gets declined (kindly, with reasons).
+**This repo is a universal template.** People fork it and adapt it to their own market, language, and profile. This fork is market-agnostic, person-agnostic, and OpenCode-native; upstream remains Claude Code-native, so runtime-layer changes live here. The corollary: a contribution is judged by fit to this rule first, execution quality second. Well-built but off-policy still gets declined (kindly, with reasons).
 
 ## What gets merged
 
@@ -15,7 +15,7 @@ Thanks for considering a contribution! This repo has a deliberate, narrow philos
 
 ## What gets declined
 
-- **Market- or country-specific skills and content.** One country's portal opens the door to every country's portal; there is no principled stopping point. Precedent: [#31] (India), [#39] (France, despite an honest and excellent PR), [#67] (China). The in-tree portal skills are either country-agnostic (`linkedin-search`) or the maintainer's own demonstration instance (the Danish portals).
+- **Market- or country-specific skills and content.** One country's portal opens the door to every country's portal; there is no principled stopping point. Precedent: [#31] (India), [#39] (France, despite an honest and excellent PR), [#67] (China). The in-tree portal skills in this fork are country-agnostic (`linkedin-search` and `freehire-search`); market-specific portals live in forks.
 - **Personal profile data.** The template ships placeholders; your populated profile lives in your fork. CI enforces this (`placeholder-integrity`). Precedent: [#17], [#72].
 - **Alternative-harness ports and duplicate workflow sources.** The markdown specs ARE the implementation; a second copy (another agent CLI, an orchestration layer, a wrapper command) drifts from the first the moment either changes. Precedent: [#44], [#49], [#66].
 - **Speculative infrastructure.** Complexity must be argued from a problem that exists, not one that might. Precedent: [#63].
@@ -50,19 +50,11 @@ Market-specific skills are genuinely valuable - they just live in forks, where t
 
 One practical warning: when you open a PR from a fork, GitHub targets this upstream repo by default, not your own - three personalized-fork PRs landed here by accident in a single week ([#155], [#162], [#165]). Check the "base repository" dropdown before publishing.
 
-## Porting to another AI runtime? Forks too
+## Runtime changes stay in this fork
 
-Claude Code is the reference runtime: it is what the maintainer runs daily and what every methodology change is verified on. A parallel command tree for another runtime (Codex, Antigravity, Gemini CLI, ...) would ship untested on every change - CI cannot run those harnesses - and each accepted runtime makes the next one harder to refuse. It is the same arithmetic that keeps market-specific portals in forks.
+Upstream is Claude Code-native; this fork is OpenCode-only. The runtime layer (`.opencode/`, `opencode.json`, agent permission blocks, and OpenCode skill metadata) is maintained here and is not expected to merge upstream. Keep methodology changes in the numbered `job-application-assistant` files compatible with upstream where practical: `tools/check_upstream_updates.py` maps the upstream `.claude/...` paths to this fork's `.opencode/...` paths, and `tools/upstream_triage.py` localizes the same paths before deciding whether a commit is relevant.
 
-What upstream maintains for other runtimes instead:
-
-- The portal search skills in `.agents/skills/` use the portable Agent Skills format (`SKILL.md` per portal) and are auto-discovered by Codex and Antigravity today.
-- The root `AGENTS.md` points any agent at the canonical workflow specs and the profile entry point.
-- Framework instruction files carry `framework_version` markers, so a runtime fork can track methodology changes precisely (`python3 tools/check_upstream_updates.py`).
-
-Announce your runtime fork in the pinned [Community forks & adaptations](https://github.com/MadsLorentzen/ai-job-search/discussions/78) discussion and it gets listed alongside the market adaptations. The proven shape is a thin pointer: reference the specs here instead of copying them, so upstream improvements reach your fork on rebase.
-
-This is a decision, not a dogma: if cross-runtime standards mature to the point where these specs run unmodified elsewhere, or the community's center of gravity moves to runtime forks, the trade-off gets re-evaluated. Background: the architecture thread in [Community forks & adaptations](https://github.com/MadsLorentzen/ai-job-search/discussions/78).
+`AGENTS.md` is the OpenCode entry point. `CANDIDATE_PROFILE.md` is loaded through `opencode.json` `instructions`. Do not add a second command tree or a parallel runtime layer; one OpenCode implementation is the source of truth.
 
 ## Practical notes
 

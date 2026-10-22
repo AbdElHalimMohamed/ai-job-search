@@ -319,7 +319,7 @@ def _excerpt(line: str, at: int) -> str:
     The quote is what lets the user dismiss a flag in a second, so it must
     show the match. A fixed `line[:LINE_MAX]` showed the first 200 characters
     of a long paragraph and nothing suspicious when the trigger sat later -
-    WebFetch paragraphs and portal plain output routinely run past 200.
+    webfetch paragraphs and portal plain output routinely run past 200.
     """
     if len(line) <= LINE_MAX:
         return line

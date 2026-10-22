@@ -1,0 +1,69 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": [
+    "CANDIDATE_PROFILE.md"
+  ],
+  "default_agent": "job-search",
+  "permission": {
+    "read": {
+      "*": "allow",
+      ".env": "deny",
+      ".env.*": "deny",
+      "~/.ssh/**": "deny",
+      "~/.aws/**": "deny",
+      "~/.gnupg/**": "deny"
+    },
+    "edit": {
+      "*": "allow",
+      "opencode.json": "ask",
+      ".opencode/**": "ask",
+      ".opencode/tmp/**": "allow",
+      ".github/**": "ask",
+      "tools/security_guards.py": "ask",
+      "AGENTS.md": "ask"
+    },
+    "shell": {
+      "*": "ask",
+      "bun --version": "allow",
+      "bun run .agents/skills/linkedin-search/cli/src/cli.ts *": "allow",
+      "bun run .agents/skills/freehire-search/cli/src/cli.ts *": "allow",
+      "python3 tools/rank_state.py *": "allow",
+      "python3 tools/job_key.py *": "allow",
+      "python3 tools/scrape_state.py *": "allow",
+      "python3 tools/verify_pdf.py *": "allow",
+      "python3 tools/verify_layout.py *": "allow",
+      "python3 tools/robots_check.py *": "allow",
+      "python3 tools/fetch_page.py *": "allow",
+      "python3 tools/posting_guard.py *": "allow",
+      "python3 salary_lookup.py *": "allow",
+      "python salary_lookup.py *": "allow",
+      "pdftotext *": "allow",
+      "git push *": "ask",
+      "curl *": "deny",
+      "wget *": "deny",
+      "scp *": "deny",
+      "sftp *": "deny",
+      "ssh *": "deny",
+      "nc *": "deny",
+      "ncat *": "deny",
+      "netcat *": "deny"
+    },
+    "skill": {
+      "*": "deny",
+      "job-application-assistant": "allow",
+      "scrape": "allow",
+      "upskill": "allow",
+      "linkedin-search": "allow",
+      "freehire-search": "allow"
+    },
+    "task": {
+      "*": "deny",
+      "posting-fetcher": "allow",
+      "posting-scorer": "allow",
+      "application-reviewer": "allow"
+    },
+    "webfetch": "allow",
+    "websearch": "allow",
+    "question": "allow"
+  }
+}

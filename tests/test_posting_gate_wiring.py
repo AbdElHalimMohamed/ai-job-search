@@ -12,9 +12,9 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-APPLY = REPO / ".claude" / "commands" / "apply.md"
-INTERVIEW = REPO / ".claude" / "commands" / "interview.md"
-RESEARCH = REPO / ".claude" / "skills" / "job-application-assistant" / "09-web-research.md"
+APPLY = REPO / ".opencode" / "commands" / "apply.md"
+INTERVIEW = REPO / ".opencode" / "commands" / "interview.md"
+RESEARCH = REPO / ".opencode" / "skills" / "job-application-assistant" / "09-web-research.md"
 
 
 class ArchiveWiring(unittest.TestCase):
@@ -43,13 +43,13 @@ class OtherFrontDoors(unittest.TestCase):
     fetch fallback are the other places a posting enters; each names the gate."""
 
     def test_skill_step1_names_the_gate(self):
-        text = (REPO / ".claude" / "skills" / "job-application-assistant" / "SKILL.md").read_text(encoding="utf-8")
+        text = (REPO / ".opencode" / "skills" / "job-application-assistant" / "SKILL.md").read_text(encoding="utf-8")
         step1 = re.search(r"### Step 1: Research & Evaluate Fit(.*?)(?=### Step 2)", text, re.DOTALL).group(1)
         self.assertIn("posting_guard", step1)
         self.assertIn("framework_version: 1.3.6", text)
 
     def test_outcome_fresh_fetch_is_gated(self):
-        text = (REPO / ".claude" / "commands" / "outcome.md").read_text(encoding="utf-8")
+        text = (REPO / ".opencode" / "commands" / "outcome.md").read_text(encoding="utf-8")
         self.assertIn("posting_guard", text)
 
     def test_interview_fetch_fallback_is_gated(self):
@@ -58,19 +58,24 @@ class OtherFrontDoors(unittest.TestCase):
         fallback = re.search(r"2\. \*\*Fallbacks\*\*(.*?)(?=\n3\. )", step1, re.DOTALL).group(1)
         self.assertIn("posting_guard", fallback)
 
-    def test_scratchpad_is_guarded_everywhere_the_gate_writes(self):
-        for path in (APPLY, REPO / ".claude" / "agents" / "posting-fetcher.md", REPO / ".claude" / "agents" / "posting-scorer.md"):
+    def test_posting_files_use_the_opencode_scratchpad_or_stdout(self):
+        cases = [
+            (APPLY, ".opencode/tmp/"),
+            (REPO / ".opencode" / "agents" / "posting-fetcher.md", "--guard"),
+            (REPO / ".opencode" / "agents" / "posting-scorer.md", "--guard"),
+        ]
+        for path, needle in cases:
             text = path.read_text(encoding="utf-8")
             with self.subTest(path=path.name):
-                self.assertNotRegex(text, r"\$SCRATCHPAD/", "use ${SCRATCHPAD:?...} so an unset variable fails loudly")
-                self.assertIn("${SCRATCHPAD:?", text)
+                self.assertNotIn("$SCRATCHPAD", text, "Claude's SCRATCHPAD variable does not exist in OpenCode")
+                self.assertIn(needle, text)
 
     def test_fetch_agents_can_discover_installed_portals(self):
         for name in ("posting-fetcher.md", "posting-scorer.md"):
-            text = (REPO / ".claude" / "agents" / name).read_text(encoding="utf-8")
-            tools = re.search(r"^tools:\s*(.*)$", text, re.M).group(1)
+            text = (REPO / ".opencode" / "agents" / name).read_text(encoding="utf-8")
             with self.subTest(agent=name):
-                self.assertIn("Glob", tools, "rung 1 needs to find .agents/skills/*/SKILL.md")
+                self.assertIn("glob", text, "rung 1 needs to find .agents/skills/*/SKILL.md")
+                self.assertIn(".agents/skills/*/SKILL.md", text)
 
 
 class TrustBoundaryWiring(unittest.TestCase):

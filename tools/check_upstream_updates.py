@@ -7,7 +7,7 @@ This script:
 1. Identifies the upstream remote (defaults to 'upstream', falls back to 'origin').
 2. Fetches the latest commits from the upstream remote.
 3. Compares the 'framework_version' in your local files under
-   .claude/skills/job-application-assistant/ with those in the upstream remote.
+   .opencode/skills/job-application-assistant/ with those in the upstream remote.
 4. Alerts you if a file has been updated upstream with a newer version.
 """
 
@@ -21,17 +21,35 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+# Upstream is Claude-native; this fork stores the same methodology under .opencode.
+UPSTREAM_PATHS = {
+    path: path.replace(".opencode/skills/job-application-assistant/", ".claude/skills/job-application-assistant/")
+    for path in [
+        ".opencode/skills/job-application-assistant/01-candidate-profile.md",
+        ".opencode/skills/job-application-assistant/02-behavioral-profile.md",
+        ".opencode/skills/job-application-assistant/03-writing-style.md",
+        ".opencode/skills/job-application-assistant/04-job-evaluation.md",
+        ".opencode/skills/job-application-assistant/05-cv-templates.md",
+        ".opencode/skills/job-application-assistant/06-cover-letter-templates.md",
+        ".opencode/skills/job-application-assistant/07-interview-prep.md",
+        ".opencode/skills/job-application-assistant/08-application-forms.md",
+        ".opencode/skills/job-application-assistant/09-web-research.md",
+        ".opencode/skills/job-application-assistant/SKILL.md",
+    ]
+}
+UPSTREAM_PATHS["AGENTS.md"] = "AGENTS.md"
+
 FRAMEWORK_FILES = [
-    ".claude/skills/job-application-assistant/01-candidate-profile.md",
-    ".claude/skills/job-application-assistant/02-behavioral-profile.md",
-    ".claude/skills/job-application-assistant/03-writing-style.md",
-    ".claude/skills/job-application-assistant/04-job-evaluation.md",
-    ".claude/skills/job-application-assistant/05-cv-templates.md",
-    ".claude/skills/job-application-assistant/06-cover-letter-templates.md",
-    ".claude/skills/job-application-assistant/07-interview-prep.md",
-    ".claude/skills/job-application-assistant/08-application-forms.md",
-    ".claude/skills/job-application-assistant/09-web-research.md",
-    ".claude/skills/job-application-assistant/SKILL.md",
+    ".opencode/skills/job-application-assistant/01-candidate-profile.md",
+    ".opencode/skills/job-application-assistant/02-behavioral-profile.md",
+    ".opencode/skills/job-application-assistant/03-writing-style.md",
+    ".opencode/skills/job-application-assistant/04-job-evaluation.md",
+    ".opencode/skills/job-application-assistant/05-cv-templates.md",
+    ".opencode/skills/job-application-assistant/06-cover-letter-templates.md",
+    ".opencode/skills/job-application-assistant/07-interview-prep.md",
+    ".opencode/skills/job-application-assistant/08-application-forms.md",
+    ".opencode/skills/job-application-assistant/09-web-research.md",
+    ".opencode/skills/job-application-assistant/SKILL.md",
     "AGENTS.md",
 ]
 
@@ -142,14 +160,15 @@ def main() -> int:
         local_ver = get_framework_version_from_text(local_text)
         
         # Get upstream version
-        rc, upstream_text, git_err = run_git(["show", f"{ref}:{rel_path}"])
+        upstream_path = UPSTREAM_PATHS.get(rel_path, rel_path)
+        rc, upstream_text, git_err = run_git(["show", f"{ref}:{upstream_path}"])
         if rc != 0:
             # A file present locally but missing from the upstream ref means
             # it was renamed or deleted upstream; any other git failure means
             # the comparison is incomplete. Either way, never report a clean
             # '[OK]' while silently skipping the file.
             if "does not exist" in git_err or "exists on disk, but not in" in git_err:
-                missing_upstream.append(rel_path)
+                missing_upstream.append(f"{rel_path} (upstream: {upstream_path})")
             else:
                 errors.append(f"Failed to read upstream version of {rel_path}: {git_err.strip()}")
             continue
@@ -168,7 +187,7 @@ def main() -> int:
                 "filename": Path(rel_path).name,
                 "local": local_ver,
                 "upstream": upstream_ver,
-                "path": rel_path
+                "path": upstream_path
             })
 
 

@@ -21,7 +21,7 @@ import unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
-COMMANDS = REPO / ".claude" / "commands"
+COMMANDS = REPO / ".opencode" / "commands"
 GMAIL_SYNC = COMMANDS / "gmail-sync.md"
 OUTCOME = COMMANDS / "outcome.md"
 
